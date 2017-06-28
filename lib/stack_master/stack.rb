@@ -62,9 +62,9 @@ module StackMaster
     end
 
     def self.generate(stack_definition, config)
-      parameter_hash = ParameterLoader.load(stack_definition.parameter_files)
       template_body = TemplateCompiler.compile(config, stack_definition.template_file_path, stack_definition.compiler_options)
       template_format = TemplateUtils.identify_template_format(template_body)
+      parameter_hash = build_parameter_hash(stack_definition, template_body, config)
       parameters = ParameterResolver.resolve(config, stack_definition, parameter_hash)
       stack_policy_body = if stack_definition.stack_policy_file_path
                             File.read(stack_definition.stack_policy_file_path)
@@ -99,6 +99,13 @@ module StackMaster
 
     def template
       @template ||= TemplateUtils.maybe_compressed_template_body(template_body)
+    end
+
+    def self.build_parameter_hash(stack_definition, template_body, config)
+      keys = TemplateUtils.template_hash(template_body).fetch('Parameters', {}).keys
+      params = ParameterLoader.load(stack_definition.parameter_files)
+      defaults = ParameterLoader.normalize(config.parameter_defaults)
+      defaults.select { |k, _| keys.include? k }.update(params)
     end
   end
 end

@@ -16,5 +16,9 @@ module StackMaster
         hash
       end
     end
+
+    def self.normalize(data)
+      Hash[data.map { |k, v| [k.camelize, v] }]
+    end
   end
 end

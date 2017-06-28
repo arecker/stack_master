@@ -15,6 +15,7 @@ module StackMaster
                   :template_dir,
                   :stack_defaults,
                   :region_defaults,
+                  :parameter_defaults,
                   :region_aliases,
                   :template_compilers,
 
@@ -36,6 +37,7 @@ module StackMaster
       @base_dir = base_dir
       @template_dir = config.fetch('template_dir', nil)
       @stack_defaults = config.fetch('stack_defaults', {})
+      @parameter_defaults = config.fetch('parameter_defaults', {})
       @region_aliases = Utils.underscore_keys_to_hyphen(config.fetch('region_aliases', {}))
       @region_to_aliases = @region_aliases.inject({}) do |hash, (key, value)|
         hash[value] ||= []
